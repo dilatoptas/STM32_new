@@ -23,11 +23,23 @@ public:
 
     void begin() {
         // ⚠️ TIM3 kullanıyorsan saatini aç
+        // --- TIMER CLOCK ---
         if (_htim.Instance == TIM3) {
             __HAL_RCC_TIM3_CLK_ENABLE();
+            __HAL_RCC_GPIOA_CLK_ENABLE();   // PA6, PA7 için
+            __HAL_RCC_AFIO_CLK_ENABLE();
         }
         // Gerekirse başka timerlar buraya eklenir:
         // else if (_htim.Instance == TIM2) __HAL_RCC_TIM2_CLK_ENABLE();
+
+         // --- GPIO INIT (Encoder pinleri) ---
+        if (_htim.Instance == TIM3) {
+            GPIO_InitTypeDef GPIO_InitStruct = {0};
+            GPIO_InitStruct.Pin = GPIO_PIN_6 | GPIO_PIN_7;
+            GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+            GPIO_InitStruct.Pull = GPIO_NOPULL;
+            HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+        }
 
         _htim.Init.Prescaler = 0;
         _htim.Init.CounterMode = TIM_COUNTERMODE_UP;
